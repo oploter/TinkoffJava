@@ -68,6 +68,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>${jetbrains-annotations.version}</version>
@@ -95,6 +101,7 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
