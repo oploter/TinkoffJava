@@ -1,7 +1,5 @@
 package edu.hw4;
 
-import com.google.common.collect.ComparisonChain;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -170,13 +168,19 @@ public class Task1 {
         if (animals == null) {
             return null;
         }
-        return animals.stream().sorted(((o1, o2) -> ComparisonChain
-                .start()
-                .compare(o1.type(), o2.type())
-                .compare(o1.sex(), o2.sex())
-                .compare(o1.name(), o2.name())
-                .result()
-        )).collect(Collectors.toList());
+
+        return animals.stream().sorted(((o1, o2) -> {
+            int res1 = o1.type().compareTo(o2.type());
+            if (res1 != 0) {
+                return res1;
+            }
+            int res2 = o1.sex().compareTo(o2.sex());
+            if (res2 != 0) {
+                return res2;
+            }
+            return o1.name().compareTo(o2.name());
+        })).collect(Collectors.toList());
+
     }
 
     public static Boolean task17(List<Animal> animals) {
