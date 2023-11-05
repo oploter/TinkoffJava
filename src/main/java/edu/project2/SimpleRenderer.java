@@ -1,8 +1,7 @@
 package edu.project2;
 
-import com.google.common.collect.ComparisonChain;
-
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class SimpleRenderer implements Renderer {
@@ -21,10 +20,9 @@ public class SimpleRenderer implements Renderer {
     }
 
     public String render(Maze maze, List<Coordinate> path) {
-        List<Coordinate> sortedPath = path.stream().sorted((c1, c2) -> ComparisonChain.start()
-                .compare(c1.row(), c2.row())
-                .compare(c1.col(), c2.col())
-                .result()).toList();
+        List<Coordinate> sortedPath = path.stream()
+                .sorted(Comparator.comparingInt(Coordinate::row)
+                        .thenComparingInt(Coordinate::col)).toList();
         int sortedPathInd = 0;
 
         StringBuilder stringRepresentation = new StringBuilder();
