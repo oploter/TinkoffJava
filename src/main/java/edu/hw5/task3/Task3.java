@@ -13,7 +13,7 @@ class ISODashParser extends DateParser {
 
     public Optional<LocalDate> parseDate(String string) {
         try {
-            LocalDate date = LocalDate.parse(string, DateTimeFormatter.ofPattern("yyyy-MM-d"));
+            LocalDate date = LocalDate.parse(string, DateTimeFormatter.ofPattern("[uuuu][uuu][uu]-M-d"));
             return Optional.ofNullable(date);
         } catch (DateTimeParseException e) {
             return nextParser != null ? nextParser.parseDate(string) : Optional.empty();
@@ -21,29 +21,14 @@ class ISODashParser extends DateParser {
     }
 }
 
-class ISOSlashYYYYParser extends DateParser {
-    public ISOSlashYYYYParser(DateParser nextParser) {
+class ISOSlashParser extends DateParser {
+    public ISOSlashParser(DateParser nextParser) {
         super(nextParser);
     }
 
     public Optional<LocalDate> parseDate(String string) {
         try {
-            LocalDate date = LocalDate.parse(string, DateTimeFormatter.ofPattern("d/M/yyyy"));
-            return Optional.ofNullable(date);
-        } catch (DateTimeParseException e) {
-            return nextParser != null ? nextParser.parseDate(string) : Optional.empty();
-        }
-    }
-}
-
-class ISOSlashYYParser extends DateParser {
-    public ISOSlashYYParser(DateParser nextParser) {
-        super(nextParser);
-    }
-
-    public Optional<LocalDate> parseDate(String string) {
-        try {
-            LocalDate date = LocalDate.parse(string, DateTimeFormatter.ofPattern("d/M/yy"));
+            LocalDate date = LocalDate.parse(string, DateTimeFormatter.ofPattern("d/M/[uuuu][uuu][uu]"));
             return Optional.ofNullable(date);
         } catch (DateTimeParseException e) {
             return nextParser != null ? nextParser.parseDate(string) : Optional.empty();
@@ -95,11 +80,9 @@ public class Task3 {
 
     private static final DateParser dateParser =
             new ISODashParser(
-                    new ISOSlashYYParser(
-                            new ISOSlashYYYYParser(
-                                    new TomorrowTodayYesterdayParser(
-                                            new DaysAgoParser(null)
-                                    )
+                    new ISOSlashParser(
+                            new TomorrowTodayYesterdayParser(
+                                    new DaysAgoParser(null)
                             )
                     )
             );
