@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class Task1 {
@@ -35,10 +36,11 @@ public class Task1 {
         }
         Map<Animal.Type, Integer> typeCnt
                 = animals.stream().collect(Collectors.toMap(Animal::type, s -> 1, Integer::sum));
-        for (Animal.Type type : Animal.Type.values()) {
-            typeCnt.putIfAbsent(type, 0);
-        }
-        return typeCnt;
+        Map<Animal.Type, Integer> typeCntWithZeroesIfAbsent = Stream.of(Animal.Type.values()).collect(Collectors.toMap(
+                Function.identity(),
+                v -> typeCnt.getOrDefault(v, 0)
+        ));
+        return typeCntWithZeroesIfAbsent;
     }
 
     public static Animal task4(List<Animal> animals) {
@@ -184,13 +186,30 @@ public class Task1 {
     }
 
     public static Boolean task17(List<Animal> animals) {
+        enum DogsAndSpiders {
+            DOG_BITING,
+            DOG_NOT_BITING,
+            SPIDER_BITING,
+            SPIDER_NOT_BITING
+        }
+
         if (animals == null) {
             return null;
         }
-        int bitingSpiderCnt = 0;
-        int totalSpiderCnt = 0;
-        int bitingDogCnt = 0;
-        int totalDogCnt = 0;
+        Map<DogsAndSpiders, Integer> dogsAndSpidersCnt = animals.stream()
+                .filter(a -> (a.type().equals(Animal.Type.DOG) || a.type().equals(Animal.Type.SPIDER)))
+                .collect(Collectors.toMap(
+                        a -> {
+                            if (a.type() == Animal.Type.DOG) {
+                                return a.bites() ? DogsAndSpiders.DOG_BITING : DogsAndSpiders.DOG_NOT_BITING;
+                            } else {
+                                return a.bites() ? DogsAndSpiders.SPIDER_BITING : DogsAndSpiders.SPIDER_NOT_BITING;
+                            }
+                        },
+                        a -> 1,
+                        Integer::sum
+                ));
+        /*
         for (Animal a : animals) {
             if (a.type() == Animal.Type.DOG) {
                 ++totalDogCnt;
@@ -204,6 +223,13 @@ public class Task1 {
                 }
             }
         }
+         */
+
+        int bitingDogCnt = dogsAndSpidersCnt.getOrDefault(DogsAndSpiders.DOG_BITING, 0);
+        int totalDogCnt = bitingDogCnt + dogsAndSpidersCnt.getOrDefault(DogsAndSpiders.DOG_NOT_BITING, 0);
+        int bitingSpiderCnt = dogsAndSpidersCnt.getOrDefault(DogsAndSpiders.SPIDER_BITING, 0);
+        int totalSpiderCnt = bitingSpiderCnt + dogsAndSpidersCnt.getOrDefault(DogsAndSpiders.SPIDER_NOT_BITING, 0);
+
         if (totalSpiderCnt == 0 || totalDogCnt == 0) {
             return false;
         }
